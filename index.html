@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfect Birthday</title>
+    <style>
+        body {
+            margin: 0;
+            background: #050505;
+            color: white;
+            font-family: 'Georgia', serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        /* Background Stars */
+        #stars {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+        }
+
+        /* Main Container */
+        .container {
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 105, 180, 0.3);
+            box-shadow: 0 0 30px rgba(255, 105, 180, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            color: #ff69b4;
+            font-size: 2.5rem;
+            margin-bottom: 5px;
+            text-shadow: 0 0 10px #ff69b4;
+        }
+
+        .lyrics {
+            font-style: italic;
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+            color: #ffd1dc;
+        }
+
+        /* Timer Styling */
+        .timer {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .time-box {
+            background: rgba(255, 105, 180, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            min-width: 70px;
+        }
+
+        .time-box span {
+            display: block;
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .time-box label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.7;
+        }
+
+        /* Overlay to play music */
+        #overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            cursor: pointer;
+        }
+
+        .play-btn {
+            background: #ff69b4;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            border: none;
+            box-shadow: 0 0 20px #ff69b4;
+        }
+
+        /* Floating Hearts Animation */
+        .heart {
+            position: absolute;
+            color: #ff69b4;
+            font-size: 20px;
+            user-select: none;
+            pointer-events: none;
+            animation: float 4s linear forwards;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-100vh) scale(1.5); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="overlay" onclick="startSurprise()">
+        <button class="play-btn">Click to Start the Magic ❤️</button>
+    </div>
+
+    <audio id="music" loop>
+        <source src="https://archive.org/download/perfect-ed-sheeran/perfect-ed-sheeran.mp3" type="audio/mpeg">
+    </audio>
+
+    <canvas id="stars"></canvas>
+
+    <div class="container">
+        <div style="font-size: 3rem;">🎂</div>
+        <h1>Happy Birthday!</h1>
+        <p class="lyrics">"Baby, I'm dancing in the dark,<br>with you between my arms..."</p>
+        
+        <p style="margin-bottom: 10px; opacity: 0.8;">The world is a better place since:</p>
+        
+        <div class="timer">
+            <div class="time-box"><span id="days">00</span><label>Days</label></div>
+            <div class="time-box"><span id="hours">00</span><label>Hours</label></div>
+            <div class="time-box"><span id="mins">00</span><label>Mins</label></div>
+            <div class="time-box"><span id="secs">00</span><label>Secs</label></div>
+        </div>
+        
+        <p style="margin-top: 20px; font-size: 0.8rem; color: #ff69b4;">(23rd Jan 2012 — Forever)</p>
+    </div>
+
+    <script>
+        // 1. SET THE DATE
+        const startDate = new Date("2012-01-23T00:00:00");
+
+        function updateTimer() {
+            const now = new Date();
+            const diff = now - startDate;
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const mins = Math.floor((diff / 1000 / 60) % 60);
+            const secs = Math.floor((diff / 1000) % 60);
+
+            document.getElementById("days").innerText = days;
+            document.getElementById("hours").innerText = hours;
+            document.getElementById("mins").innerText = mins;
+            document.getElementById("secs").innerText = secs;
+        }
+
+        function startSurprise() {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('music').play();
+            setInterval(createHeart, 300);
+            setInterval(updateTimer, 1000);
+            updateTimer();
+        }
+
+        // Heart Animation
+        function createHeart() {
+            const heart = document.createElement("div");
+            heart.className = "heart";
+            heart.innerHTML = "❤️";
+            heart.style.left = Math.random() * 100 + "vw";
+            heart.style.top = "100vh";
+            heart.style.fontSize = (Math.random() * 20 + 10) + "px";
+            heart.style.animationDuration = (Math.random() * 3 + 2) + "s";
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 4000);
+        }
+
+        // Star Background
+        const canvas = document.getElementById('stars');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const stars = [];
+        for(let i=0; i<200; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 2,
+                opacity: Math.random()
+            });
+        }
+
+        function drawStars() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            stars.forEach(s => {
+                ctx.fillStyle = `rgba(255, 255, 255, ${s.opacity})`;
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+                ctx.fill();
+                s.opacity += (Math.random() - 0.5) * 0.05;
+                if(s.opacity < 0) s.opacity = 0;
+                if(s.opacity > 1) s.opacity = 1;
+            });
+            requestAnimationFrame(drawStars);
+        }
+        drawStars();
+    </script>
+</body>
+  </html>
